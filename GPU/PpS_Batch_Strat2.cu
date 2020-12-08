@@ -1,6 +1,6 @@
 /*
  *  GPU kernel to compute polyphase structure
- *  --  Strategy 1  --
+ *  --  Strategy 2  --
  *
  *  Copyright (c) 2020 Nitish Ragoomundun
  *                     lrugratz gmail com
@@ -29,10 +29,11 @@
 /*
  *  Nchannels: number of frequency channels in output spectra,
  *  Ntaps: number of taps for PFB,
- *  InSignal: array of size containing
- *            (Nspectra - 1 + Ntaps) x Npols x Nelements x Nchannels
- *            interleaved IQ samples of the input signal in an array
- *            of cufftComplex vectors (I:x, Q:y),
+ *  in GPU global memory:
+ *  Window: array of size (Ntaps x Nchannels) containing filter coeff,
+ *  InSignal: array of size (Nspectra - 1 + Ntaps) x Nchannels containing
+ *            interleaved IQ samples of the input signal in an array of
+ *            cufftComplex vectors (I:x, Q:y),
  *  PolyStruct: array of size Nchannels which will hold output.
  *
  *  NumThreadx = MaxThreadsPerBlock
@@ -45,14 +46,19 @@
  */
 __global__ void PpS_Batch(int Nchannels,
                           int Ntaps,
+                          float *Window,
                           cuComplex *InSignal,
                           cufftComplex *PolyStruct)
 {
   int i;
   int channelIdx = threadIdx.x + blockIdx.x*blockDim.x;
-  float tmp1, tmp2, filter_coeff;
+  float tmp_window;
   cuComplex tmp_input;
   cufftComplex tmp_product;
+
+  // Input array arrangement from slowest varying index
+  // to most rapidly varying:
+  // Spectrum -> Element -> Pol -> Channel
 
   /*  Array position offset wrt element index  */
   long offset_elem = blockIdx.z * Nchannels;
@@ -64,34 +70,26 @@ __global__ void PpS_Batch(int Nchannels,
   long offset_spec = blockIdx.y * stride_spec;
 
 
-  tmp_product.x = 0.0f;
-  tmp_product.y = 0.0f;
-
-  for (i=0 ; i<Ntaps ; i++)
+  if (channelIdx < Nchannels)
   {
-    /*  Read input signal data and initialise tmp_product variable  */
-    tmp_input  = InSignal[offset_spec + offset_elem + i*stride_spec + channelIdx];
+    tmp_product.x = 0.0f;
+    tmp_product.y = 0.0f;
 
-    /***  BEGIN Calculate FIR filter  ***/
+    for (i=0 ; i<Ntaps ; i++)
+    {
+      /*  Read input signal data and filter coefficient  */
+      tmp_input  = InSignal[offset_spec + offset_elem + i*stride_spec + channelIdx];
+      tmp_window = Window[i*Nchannels + channelIdx];
 
-    tmp1 = (channelIdx + (i - 0.5f*Ntaps)*Nchannels) / Nchannels;
-    if (tmp1 == 0.0f)  /*  To prevent division by 0  */
-      filter_coeff = 1.0f ;
-    else
-      filter_coeff = sinpif(tmp1) / (d_PI * tmp1);
+      /*  Accumulate FIR  */
+      tmp_product.x = fmaf(tmp_window, tmp_input.x, tmp_product.x);  // I
+      tmp_product.y = fmaf(tmp_window, tmp_input.y, tmp_product.y);  // Q
+    }
 
-    tmp2 = 2.0f*(channelIdx + i*Nchannels) / (Ntaps*Nchannels);
-
-    filter_coeff *= 0.35875f - 0.48829f*cospif(tmp2) + 0.14128f*cospif(2.0f*tmp2) - 0.01168f*cospif(3.0f*tmp2);
-
-    /***  END Calculate FIR filter  ***/
-
-
-    /*  Accumulate FIR  */
-    tmp_product.x = fmaf(filter_coeff, tmp_input.x, tmp_product.x);  // I
-    tmp_product.y = fmaf(filter_coeff, tmp_input.y, tmp_product.y);  // Q
+    // NOTE: in order to output specific order for use with Reorder kernel for cuBLAS:
+    // Output array arrangement from slowest varying index
+    // to most rapidly varying:
+    // Spectrum -> Element -> Pol -> Channel
+    PolyStruct[offset_spec + offset_elem + channelIdx] = tmp_product;
   }
-
-  /*  Write to output array  */
-  PolyStruct[offset_spec + offset_elem + channelIdx] = tmp_product;
 }
