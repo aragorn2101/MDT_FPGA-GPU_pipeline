@@ -1,5 +1,5 @@
 /*
- *  GPU kernel to compute polyphase structure
+ *  GPU kernel to compute polyphase structure (CUDA C)
  *  --  Strategy 3  --
  *
  *  Copyright (c) 2020 Nitish Ragoomundun
@@ -13,16 +13,16 @@
  *  and/or sell copies of the Software, and to permit persons to whom the
  *  Software is furnished to do so, subject to the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ *  DEALINGS IN THE SOFTWARE.
  *
  */
 
@@ -65,6 +65,10 @@ __global__ void PpS_Batch(int Nchannels,
 
   /***  Read filter into register, read input data, multiply and store in shared memory  ***/
 
+  // NOTE: input array arrangement from slowest varying index
+  // to most rapidly varying:
+  // Spectrum -> Element -> Pol -> Channel
+
   /*  First Ntaps/2 segments  */
   tmp_window = Window[stride2];
   tmp_input = InSignal[stride3];
@@ -95,8 +99,6 @@ __global__ void PpS_Batch(int Nchannels,
     __syncthreads();
   }
 
-
-  // NOTE: in order to output specific order for use with Reorder kernel for cuBLAS:
   // Output array arrangement from slowest varying index
   // to most rapidly varying:
   // Spectrum -> Element -> Pol -> Channel

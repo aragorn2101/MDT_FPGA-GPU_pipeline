@@ -1,5 +1,5 @@
 /*
- *  GPU kernel to compute polyphase structure
+ *  GPU kernel to compute polyphase structure (CUDA C)
  *  --  Strategy 1  --
  *
  *  Copyright (c) 2020 Nitish Ragoomundun
@@ -13,26 +13,25 @@
  *  and/or sell copies of the Software, and to permit persons to whom the
  *  Software is furnished to do so, subject to the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ *  DEALINGS IN THE SOFTWARE.
  *
  */
 
 /*
  *  Nchannels: number of frequency channels in output spectra,
  *  Ntaps: number of taps for PFB,
- *  InSignal: array of size containing
- *            (Nspectra - 1 + Ntaps) x Npols x Nelements x Nchannels
- *            interleaved IQ samples of the input signal in an array
- *            of cufftComplex vectors (I:x, Q:y),
+ *  InSignal: array of size (Nspectra - 1 + Ntaps) x Nchannels containing
+ *            interleaved IQ samples of the input signal in an array of
+ *            cufftComplex vectors (I:x, Q:y),
  *  PolyStruct: array of size Nchannels which will hold output.
  *
  *  NumThreadx = MaxThreadsPerBlock
@@ -48,6 +47,10 @@ __global__ void PpS_Batch(int Nchannels,
                           cuComplex *InSignal,
                           cufftComplex *PolyStruct)
 {
+  // NOTE: input and output array arrangement from slowest varying index
+  // to most rapidly varying:
+  // Spectrum -> Element -> Pol -> Channel
+
   int i;
   int channelIdx = threadIdx.x + blockIdx.x*blockDim.x;
   float tmp1, tmp2, filter_coeff;
