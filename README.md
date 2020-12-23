@@ -1,19 +1,34 @@
 # MDT_FPGA-GPU_pipeline
 
-This repo is meant for sharing the software pipeline developed for the
-Deuterium Telescope (Mauritius), commonly known as MDT. The hardware for the
-digital back-end consists of parallel computing platforms: FPGA, multi-core CPU
-and GPU.
+This repo is meant for sharing the software developed for the digital pipeline
+of the Deuterium Telescope (Mauritius), commonly known as MDT. The hardware for
+the digital back-end consists of parallel computing platforms: FPGA, multi-core
+CPU and GPU.
 
 ## FPGA
 
-The FPGA directory contains the DAQ system design, made with Simulink, for the
-FPGA. It was done using Matlab R2018a and Vivado 2019.1.1.
+The FPGA directory contains the Simulink design for the SNAP FPGA 10-channel
+DAQ system for the MDT. A station of the MDT is equipped with 4 SNAP boards
+running the design.
 
-**NOTE:** the file mdt_snap_10ch_daq.pdf is much larger than A4. It is known
-that certain pdf reading software have trouble to open it. Some software do
-open it but does not allow sufficient zoom so that the small details can be
-seen. The software which are known to work are Okular (on KDE) and xpdf.
+The pdf file is a snapshot of the design and note that it is much larger than
+the A4 format. It is known that certain pdf reading software have trouble to
+open it. Some software do open it but does not allow sufficient zoom so that
+the small details can be seen. The software which are known to work are Okular
+(on KDE) and xpdf.
+
+The FPGA bit file was made by compiling the design with the CASPER Toolflow and
+Vivado. The CASPER Toolflow is very sensitive when it comes to versioning of
+every software used along the compilation pipeline. Thus, below are the
+software versions we used.
+
+- Ubuntu 16.04 LTS
+- Xilinx Vivado SDK 2019.1.1
+- Matlab R2018a with Simulink
+- CASPER Toolflow (\url{https://github.com/casper-astro/mlib_devel}
+           commit: 09c2d3b27d02ffc65bf0b3d1954df4f5af62c6db) with Python 3.5.2
+- casperfpga (\url{https://github.com/casper-astro/casperfpga}
+           commit: ee9c43f2c066002c018741df9604aa751f413e69) with Python 2.7.16
 
 
 ## Utilities
