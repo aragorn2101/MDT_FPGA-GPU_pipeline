@@ -27,6 +27,7 @@
  *
  */
 
+
 /*
  *  Nchannels: number of frequency channels in each spectrum,
  *  FOutput: array output from F-engine,
@@ -35,6 +36,7 @@
  *  NumThreadx = (Nchannels > MaxThreadsPerBlock) ? MaxThreadsPerBlock : Nchannels;
  *  NumThready = 1;
  *  NumThreadz = 1;
+ *
  *  NumBlockx  = Nchannels/MaxThreadsPerBlock + ((Nchannels%MaxThreadsPerBlock != 0) ? 1 : 0);
  *  NumBlocky  = Nspectra;
  *  NumBlockz  = Npols*Nelements;
