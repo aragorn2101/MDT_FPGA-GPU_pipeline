@@ -5,6 +5,7 @@ of the Deuterium Telescope (Mauritius), commonly known as MDT. The hardware for
 the digital back-end consists of parallel computing platforms: FPGA, multi-core
 CPU and GPU.
 
+
 ## FPGA
 
 The FPGA directory contains the Simulink design for the SNAP FPGA 10-channel
@@ -29,6 +30,25 @@ software versions we used.
            commit: 09c2d3b27d02ffc65bf0b3d1954df4f5af62c6db) with Python 3.5.2
 - casperfpga (\url{https://github.com/casper-astro/casperfpga}
            commit: ee9c43f2c066002c018741df9604aa751f413e69) with Python 2.7.16
+
+
+## GPU
+
+The directory contains source code for the GPU kernels used for the MDT FX
+correlator. The correlator is the sequence of the following calls:
+
+ 1. ``PpS_Batch()`` kernel
+ 2. cuFFT library routine: ``cufftExecC2C()``
+ 3. ``ReorderXInput()`` kernel
+ 4. cuBLAS library kernel: ``cublasCgemmBatched( )``
+
+The F-engine directory regroups the different implementations attempted for the
+``PpS_Batch()`` kernel. The latter is a custom kernel which computes the
+polyphase structure of the PFB before the Fourier transform.
+
+The X-engine directory contains the two strategies implemented for the custom
+``ReorderXInput()`` function, which re-orders the data in the format expected
+by the cuBLAS kernel ``cublasCgemmBatched()``.
 
 
 ## Utilities
