@@ -280,7 +280,7 @@ try:
 
     # We need to configure the ADC chips. The following function call assumes
     # that the SNAP has a 10 MHz reference input connected. It will use this
-    # reference to generate an 250 MHz sampling clock. The init function will
+    # reference to generate a 250 MHz sampling clock. The init function will
     # also tweak the alignment of the digital lanes that carry data from the
     # ADC chips to the FPGA, to ensure reliable data capture. It should take
     # about 30 seconds to run.

@@ -53,5 +53,27 @@ by the cuBLAS kernel ``cublasCgemmBatched()``.
 
 ## Utilities
 
-**Spectrum_480MHz_2048pts_3c:** design and script to acquire data at 960 MHz
-from the ADC and plot a spectrum 480 MHz wide.
+### Spectrum_\*.py, spectrum_\*.slx, spectrum_\*.fpg
+
+The .slx file is the SNAP FPGA design file to implement data acquisition from 3 channels and a simple PFB to obtain a spectrum. The Python 2 script is the corresponding control script. Below is an example:
+
+```
+$ ./Spectrum_125MHz_2048pts_3c.py -h
+Usage: Spectrum_125MHz_2048pts_3c.py [OPTIONS] <SNAP_IP_ADDRESS>
+
+Options:
+  -h, --help            show this help message and exit
+  --no-program          Skip reprogramming the FPGA.
+  -b FPGFILE, --fpgfile=FPGFILE
+                        Specify fpg file to load.
+  -c INPUT_MODE, --channel=INPUT_MODE
+                        Switches to single channel mode and parameter
+                        indicates which SMATP port is used for input. Valid
+                        range of input is [1, 5, 9].
+
+###  Example run  ###
+$ ./Spectrum_125MHz_2048pts_3c.py -b spectrum_125mhz_2048pts_3c.fpg 172.22.37.221
+```
+
+**NOTE:** spectrum_125mhz_2048pts_3c.fpg samples at 250 MSps (Nyquist frequency) to obtain a 125 MHz spectrum subsequently. FFT is done using 2048 points and analogue inputs are taken from SMATP1, SMATP5 and SMATP9. A 10 MHz input clock is required at input SMATP14.
+
