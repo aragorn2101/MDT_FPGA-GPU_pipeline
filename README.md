@@ -1,9 +1,9 @@
-# MDT_FPGA-GPU_pipeline
+# MDT FPGA-GPU pipeline
 
-This repo is meant for sharing the software developed for the digital pipeline
-of the Deuterium Telescope (Mauritius), commonly known as MDT. The hardware for
-the digital back-end consists of parallel computing platforms: FPGA, multi-core
-CPU and GPU.
+This repository is meant for sharing the software developed for the digital
+pipeline of the Deuterium Telescope (Mauritius), commonly known as MDT. The
+hardware for the digital back-end consists of parallel computing platforms:
+FPGA, multi-core CPU and GPU.
 
 
 ## FPGA
@@ -26,10 +26,10 @@ software versions we used.
 - Ubuntu 16.04 LTS
 - Xilinx Vivado SDK 2019.1.1
 - Matlab R2018a with Simulink
-- CASPER Toolflow (\url{https://github.com/casper-astro/mlib_devel}
-           commit: 09c2d3b27d02ffc65bf0b3d1954df4f5af62c6db) with Python 3.5.2
-- casperfpga (\url{https://github.com/casper-astro/casperfpga}
-           commit: ee9c43f2c066002c018741df9604aa751f413e69) with Python 2.7.16
+- CASPER Toolflow (https://github.com/casper-astro/mlib_devel)
+           commit: 09c2d3b27d02ffc65bf0b3d1954df4f5af62c6db with Python 3.5.2
+- casperfpga (https://github.com/casper-astro/casperfpga)
+           commit: ee9c43f2c066002c018741df9604aa751f413e69 with Python 2.7.16
 
 
 ## GPU
@@ -73,7 +73,11 @@ Options:
 
 ###  Example run  ###
 $ ./Spectrum_125MHz_2048pts_3c.py -b spectrum_125mhz_2048pts_3c.fpg 172.22.37.221
+
+# spectrum_125mhz_2048pts_3c.fpg samples at 250 MSps (Nyquist frequency) to
+# obtain a 125 MHz spectrum subsequently.
 ```
 
-**NOTE:** spectrum_125mhz_2048pts_3c.fpg samples at 250 MSps (Nyquist frequency) to obtain a 125 MHz spectrum subsequently. FFT is done using 2048 points and analogue inputs are taken from SMATP1, SMATP5 and SMATP9. A 10 MHz input clock is required at input SMATP14.
+**NOTE:**  FFT is done using 2048 points and analogue inputs are taken from
+SMATP1, SMATP5 and SMATP9. A 10 MHz input clock is required at input SMATP14.
 
