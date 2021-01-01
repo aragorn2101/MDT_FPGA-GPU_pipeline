@@ -42,7 +42,9 @@
  *  NumBlockz  = Npols*Nelements;
  *
  */
-__global__ void ReorderXInput(int Nchannels, cufftComplex *FOutput, cuComplex *XInput)
+__global__ void ReorderFOutput(int Nchannels,
+                               cufftComplex *FOutput,
+                               cuComplex *XInput)
 {
   int F_Idx, X_Idx;
 

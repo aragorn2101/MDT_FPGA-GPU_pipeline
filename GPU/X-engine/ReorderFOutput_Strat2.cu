@@ -45,7 +45,7 @@
  *  NumBlockz  = Nspectra;
  *
  */
-__global__ void ReorderXInput(int NpolsxNelements,
+__global__ void ReorderFOutput(int NpolsxNelements,
                               int Nchannels,
                               cufftComplex *FOutput,
                               cuComplex *XInput)
