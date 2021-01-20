@@ -1,3 +1,4 @@
+
 # MDT FPGA-GPU pipeline
 
 This repository is meant for sharing the software developed for the digital
@@ -35,11 +36,11 @@ software versions we used.
 ## GPU
 
 The directory contains source code for the GPU kernels used for the MDT FX
-correlator. The correlator is the sequence of the following calls:
+correlator. The latter consists of the sequence of the following kernel calls:
 
  1. ``PpS_Batch()`` kernel
  2. cuFFT library routine: ``cufftExecC2C()``
- 3. ``ReorderXInput()`` kernel
+ 3. ``ReorderFOutput()`` kernel
  4. cuBLAS library kernel: ``cublasCgemmBatched( )``
 
 The F-engine directory regroups the different implementations attempted for the
@@ -47,15 +48,43 @@ The F-engine directory regroups the different implementations attempted for the
 polyphase structure of the PFB before the Fourier transform.
 
 The X-engine directory contains the two strategies implemented for the custom
-``ReorderXInput()`` function, which re-orders the data in the format expected
+``ReorderFOutput()`` function, which re-orders the data in the format expected
 by the cuBLAS kernel ``cublasCgemmBatched()``.
+
+The GPU processing node is a high-end gaming desktop computer equipped with a
+graphics card:
+- Intel Core-i7 7700K (4 cores, 8 threads)
+- NVIDIA GTX Titan Xp
+
+The operating system and the software versions used on the computer are
+- Slackware GNU/Linux 14.2 64-bit, with kernel 4.19.62
+- GCC 5.5.0
+- OpenMPI 4.0.2, with MPI version 3.1
+- CUDA 10.1
+
+
+## MDT_OneStation_client
+
+Contains the multi-threaded CPU client program running on the gaming rig. Its
+functions include depacketization of data from the SNAP board network and GPU
+processing control. The program uses the Message Passing Interface (MPI) to
+perform all the assigned tasks in parallel, thus ensuring seamless
+depacketization, GPU processing and writing results to disk.
+
+The .cu and .h files contain the C and CUDA source code. ``MDT_Observer.sh`` is
+the script which runs the client program. The script can be scheduled to run as
+a cron job on Linux. ``MDT_SystemParams.conf`` contains the parameters of the
+telescope and its pipeline. The variables declared therein are used as
+arguments to the software at runtime.
 
 
 ## Utilities
 
 ### Spectrum_\*.py, spectrum_\*.slx, spectrum_\*.fpg
 
-The .slx file is the SNAP FPGA design file to implement data acquisition from 3 channels and a simple PFB to obtain a spectrum. The Python 2 script is the corresponding control script. Below is an example:
+The .slx file is the SNAP FPGA design file to implement data acquisition from 3
+channels and a simple PFB to obtain a spectrum. The Python 2 script is the
+corresponding control script. Below is an example:
 
 ```
 $ ./Spectrum_125MHz_2048pts_3c.py -h
@@ -80,4 +109,5 @@ $ ./Spectrum_125MHz_2048pts_3c.py -b spectrum_125mhz_2048pts_3c.fpg 172.22.37.22
 
 **NOTE:**  FFT is done using 2048 points and analogue inputs are taken from
 SMATP1, SMATP5 and SMATP9. A 10 MHz input clock is required at input SMATP14.
+
 
