@@ -6,6 +6,15 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <mpi.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 #include "GaussianRNG.h"
 #include "MDT_host_functions.h"
 #include "MDT_device_functions.h"
