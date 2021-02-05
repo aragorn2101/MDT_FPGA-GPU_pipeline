@@ -19,5 +19,7 @@
 /*  Host function prototypes  */
 void print_help(int, char *);
 int cudaErrCheck();
+void *get_address(struct sockaddr *);
+
 
 #endif
